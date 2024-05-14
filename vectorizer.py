@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from image2vec import Img2VecPytorch
+from image2vec_vit import Img2VecViT
 import base64, os
 
 class VectorImagePayload(BaseModel):
@@ -7,10 +7,10 @@ class VectorImagePayload(BaseModel):
   image: str
 
 class ImageVectorizer:
-  img2vec: Img2VecPytorch
+  img2vec: Img2VecViT
 
   def __init__(self, cuda_support, cuda_core):
-    self.img2vec = Img2VecPytorch(cuda_support, cuda_core)
+    self.img2vec = Img2VecViT(cuda_support, cuda_core)
 
   def vectorize(self, id: str, image: str):
     try:
