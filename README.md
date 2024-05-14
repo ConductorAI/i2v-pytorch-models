@@ -10,3 +10,9 @@ Documentation for this module can be found [here](https://weaviate.io/developers
 ```
 LOCAL_REPO="img2vec-pytorch" MODEL_NAME="resnet50" ./cicd/build.sh
 ```
+
+## Build multi-arch with distroless base
+
+```
+docker buildx build --platform linux/amd64,linux/arm64 --build-arg MODEL_NAME=resnet50 -t image-2-vector:tag -f Dockerfile.distroless --push .
+```

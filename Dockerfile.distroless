@@ -1,0 +1,55 @@
+FROM python:3.11-slim as builder
+
+WORKDIR /app
+
+RUN python -m venv /app/venv
+ENV PATH="/app/venv/bin:$PATH"
+
+RUN apt-get update
+RUN pip install --upgrade pip setuptools
+
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
+
+# Put models in a predictable location
+ENV TORCH_HOME=/app/models
+ARG MODEL_NAME
+COPY download_model.py .
+RUN ./download_model.py
+
+COPY . .
+
+FROM public.ecr.aws/j9h1x6x3/distroless-python:3.11-deb12u7 as base
+
+# Set platform-specific CHIPSET_ARCH
+FROM base as base-amd64
+
+ARG CHIPSET_ARCH=x86_64-linux-gnu
+
+FROM base as base-arm64
+
+ARG CHIPSET_ARCH=aarch64-linux-gnu
+
+ARG TARGETARCH
+FROM base-${TARGETARCH}
+
+COPY --chown=3000:3000 --chmod=755 --from=builder /app /app
+
+ENV TORCH_HOME=/app/models
+ENV PATH="/app/venv/bin:$PATH"
+
+WORKDIR /app
+
+COPY --from=builder /usr/lib/${CHIPSET_ARCH}/libbz2* /usr/lib/${CHIPSET_ARCH}/
+COPY --from=builder /usr/lib/${CHIPSET_ARCH}/liblzma* /usr/lib/${CHIPSET_ARCH}/
+
+ENV APP_PORT=8080
+
+# Get the shell back so we can run an entrypoint script or command.
+# A little sacrilegious for distroless but we primarily care about CVEs.
+COPY --from=builder /bin/sh /bin/
+
+USER 3000
+
+ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["uvicorn app:app --host 0.0.0.0 --port $APP_PORT"]
