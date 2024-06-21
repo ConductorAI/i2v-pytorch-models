@@ -16,11 +16,8 @@ ENV TORCH_HOME=/app/models
 ARG MODEL_NAME
 COPY download_model.py .
 RUN ./download_model.py
-# ENV HF_HOME=/app/models
 
 COPY . .
-
-# RUN /app/venv/bin/python3 download_vit.py
 
 FROM public.ecr.aws/j9h1x6x3/distroless-python:3.11-deb12u7 as base
 
@@ -39,7 +36,6 @@ FROM base-${TARGETARCH}
 COPY --chown=3000:3000 --chmod=755 --from=builder /app /app
 
 ENV TORCH_HOME=/app/models
-# ENV HF_HOME=/app/models
 ENV PATH="/app/venv/bin:$PATH"
 
 WORKDIR /app
