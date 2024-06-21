@@ -44,7 +44,7 @@ class Img2VecPytorch(object):
                 .unsqueeze(0)
                 .to(self.device)
             )
-            my_embedding = torch.zeros(1, self.layer_output_size, 1, 1)
+            my_embedding = torch.zeros(1, self.layer_output_size, 1, 1, device=self.device)
 
             def copy_data(m, i, o):
                 my_embedding.copy_(o.data)
@@ -59,4 +59,4 @@ class Img2VecPytorch(object):
                 )
                 return reduced_embedding.detach().cpu().squeeze().numpy()
             else:
-                return my_embedding.numpy()[0, :, 0, 0]
+                return my_embedding.detach().cpu().squeeze().numpy()
