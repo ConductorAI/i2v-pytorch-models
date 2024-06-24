@@ -29,7 +29,12 @@ class Img2VecViT:
 
     def get_vec(self, image_path):
         img = Image.open(image_path).convert("RGB")
-        inputs = self.processor(images=img, return_tensors="pt")
+        input_data_format = (
+            "channels_last" if img.width in (1, 3) or img.height in (1, 3) else None
+        )
+        inputs = self.processor(
+            images=img, return_tensors="pt", input_data_format=input_data_format
+        )
 
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
 
