@@ -9,7 +9,7 @@ from autoencoder import Autoencoder
 
 
 class Img2VecPytorch(object):
-    def __init__(self, cuda_support, cuda_core, autoencoder_enabled=True):
+    def __init__(self, cuda_support, cuda_core, autoencoder_enabled=False):
         self.device = torch.device(cuda_core if cuda_support else "cpu")
 
         self.model = models.resnet50(pretrained=True)
@@ -25,8 +25,9 @@ class Img2VecPytorch(object):
 
         if autoencoder_enabled:
             self.autoencoder = Autoencoder().to(self.device)
-            self.autoencoder.load_state_dict(torch.load("./autoencoder.pth"))
+            self.autoencoder.encoder.load_state_dict(torch.load("./autoencoder.pth"))
             self.autoencoder.eval()
+            # self.transform_matrix = torch.load("pca_transform_matrix_2048_to_2000.pt")
 
         self.scaler = transforms.Resize((224, 224))
         self.normalize = transforms.Normalize(
@@ -54,9 +55,16 @@ class Img2VecPytorch(object):
             h.remove()
 
             if self.autoencoder_enabled:
+                # Dimensionality reduction via Autoencoder
                 reduced_embedding = self.autoencoder.encoder(
                     my_embedding.view(my_embedding.size(0), -1)
                 )
+
+                # Dimensionality reduction via PCA
+                # reduced_embedding = torch.matmul(
+                #     my_embedding.view(my_embedding.size(0), -1), self.transform_matrix
+                # )
+
                 return reduced_embedding.detach().cpu().squeeze().numpy()
             else:
                 return my_embedding.detach().cpu().squeeze().numpy()

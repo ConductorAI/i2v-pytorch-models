@@ -35,9 +35,7 @@ class ImageVectorDataset(Dataset):
             cuda_core = ""
             logger.info("Running on CPU")
 
-        self.img2vec = Img2VecPytorch(
-            cuda_support, cuda_core, autoencoder_enabled=False
-        )
+        self.img2vec = Img2VecPytorch(cuda_support, cuda_core)
 
     def __len__(self):
         return len(self.img_names)
