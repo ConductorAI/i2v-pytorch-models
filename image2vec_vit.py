@@ -29,8 +29,10 @@ class Img2VecViT:
 
     def get_vec(self, image_path):
         img = Image.open(image_path).convert("RGB")
-        # If one of the image dimensions is 1 or 3 it can confuse the infer_channel_dimension_format function
-        # in the Transformers library, so we set the input_data_format to "channels_last" in that case
+        """
+        If one of the image dimensions is 1 or 3 it can confuse the `infer_channel_dimension_format` function
+        in the `Transformers` library, so we set the input_data_format to 'channels_last' in that case.
+        """
         input_data_format = (
             "channels_last" if img.width in (1, 3) or img.height in (1, 3) else None
         )
@@ -39,10 +41,12 @@ class Img2VecViT:
                 images=img, return_tensors="pt", input_data_format=input_data_format
             )
         except ValueError:
-            # The conversion of a PIL.Image.Image to a numpy array should yield the following shape:
-            # (width, height, channels) where channels is the last dimension
-            # On the off chance this isn't the case, we try again with the input_data_format set to "channels_first"
-            # which assumes the shape (channels, width, height)
+            """
+            The conversion of a PIL.Image.Image to a numpy array should yield the following shape:
+            (width, height, channels) so long as we are calling .convert("RGB") on the image beforehand.
+            Therefore, this except block should never trigger but I am leaving it here as a precaution for
+            if we ever do change the image conversion method.
+            """
             inputs = self.processor(
                 images=img, return_tensors="pt", input_data_format="channels_first"
             )
