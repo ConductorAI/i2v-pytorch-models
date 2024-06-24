@@ -40,7 +40,7 @@ class Img2VecViT:
             )
         except ValueError:
             # The conversion of a PIL.Image.Image to a numpy array should yield the following shape:
-            # (height, width, channels) where channels is the last dimension
+            # (width, height, channels) where channels is the last dimension
             # On the off chance this isn't the case, we try again with the input_data_format set to "channels_first"
             inputs = self.processor(
                 images=img, return_tensors="pt", input_data_format="channels_first"
