@@ -1,8 +1,17 @@
+import logging
 import threading
 
 import torch
 from PIL import Image
 from transformers import ViTImageProcessor, ViTModel
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
+logger = logging.getLogger(__name__)
 
 # https://huggingface.co/google/vit-base-patch16-224
 MODEL_NAME = "google/vit-base-patch16-224"
@@ -47,6 +56,9 @@ class Img2VecViT:
             Therefore, this except block should never trigger but I am leaving it here as a precaution for
             if we ever do change the image conversion method.
             """
+            logger.error(
+                "Unable to infer color channel format, defaulting to 'channels_first'"
+            )
             inputs = self.processor(
                 images=img, return_tensors="pt", input_data_format="channels_first"
             )
