@@ -18,7 +18,7 @@ ENV HF_HOME=/app/models
 
 RUN /app/venv/bin/python3 download_vit.py
 
-FROM public.ecr.aws/j9h1x6x3/distroless-python:3.11-deb12u7 as base
+FROM public.ecr.aws/j9h1x6x3/distroless-python:3.11-deb12-7.11.24.1 as base
 
 # Set platform-specific CHIPSET_ARCH
 FROM base as base-amd64
