@@ -2,6 +2,6 @@ fastapi==0.115.4
 pillow==10.3.0
 torch==2.2.0
 torchvision==0.17.0
-transformers==4.40.2
+transformers==4.48.0
 uvicorn==0.27.0
 numpy<2
