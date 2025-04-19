@@ -11,6 +11,13 @@ RUN pip install --upgrade pip setuptools
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
+# Remove pip and cleanup
+RUN apt-get remove -y python3-pip \
+   && apt-get autoremove -y \
+   && apt-get clean \
+   && rm -rf /var/lib/apt/lists/* \
+   && rm -rf /root/.cache/pip
+
 COPY . .
 
 # Put models in a predictable location
