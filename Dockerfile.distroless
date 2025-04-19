@@ -12,7 +12,9 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 # Remove pip and cleanup
-RUN rm -f /app/venv/bin/pip*
+RUN rm -rf /app/venv/lib/python3.11/site-packages/pip* \
+    && rm -rf /app/venv/lib/python3.11/site-packages/setuptools* \
+    && rm -rf /app/venv/bin/pip*
 
 COPY . .
 
