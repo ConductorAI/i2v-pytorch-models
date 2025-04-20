@@ -11,10 +11,16 @@ RUN pip install --upgrade pip setuptools
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
-# Remove pip and cleanup
+# Remove pip and cleanup for CVE remediations
 RUN rm -rf /app/venv/lib/python3.11/site-packages/pip* \
     && rm -rf /app/venv/lib/python3.11/site-packages/setuptools* \
     && rm -rf /app/venv/bin/pip*
+
+# Remove system-level pip and ensurepip
+RUN rm -rf /usr/local/lib/python3.11/site-packages/pip* \
+    && rm -rf /usr/local/lib/python3.11/site-packages/setuptools* \
+    && rm -rf /usr/local/lib/python3.11/ensurepip \
+    && rm -rf /usr/local/bin/pip*
 
 COPY . .
 
